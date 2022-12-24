@@ -9,8 +9,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
   $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
   // Check username duplication
 
-  if ($password == $confirmpassword) {
-    $err = "Username is already taken!";
+  if ($password !== $confirmpassword) {
+    $err = "Password mismatch!";
   } else {
     $check = $conn->query("SELECT id FROM `user` where `email` = '{$email}'")->num_rows;
     if ($check > 0) {
