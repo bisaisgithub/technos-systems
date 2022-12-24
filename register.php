@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
   } else {
     $check = $conn->query("SELECT id FROM `user` where `email` = '{$email}'")->num_rows;
     if ($check > 0) {
-      $err = "Username is already taken!";
+      $err = "Email is already taken!";
     } else {
       $sql = "INSERT INTO `user` (`full_name`, `email`, `password`) VALUES (?, ?, ?)";
       $stmt = $conn->prepare($sql);

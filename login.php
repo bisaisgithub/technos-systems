@@ -25,13 +25,13 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         /**
          * Store Login Credential
          */
-        setcookie('username', $_POST['username'], (time() + ((365 * 24 * 60 * 60) * 3)));
+        setcookie('email', $_POST['email'], (time() + ((365 * 24 * 60 * 60) * 3)));
         setcookie('password', $_POST['password'], (time() + ((365 * 24 * 60 * 60) * 3)));
       } else {
         /**
          * Delete Login Credential
          */
-        setcookie('username', $_POST['username'], (time() - (24 * 60 * 60)));
+        setcookie('email', $_POST['email'], (time() - (24 * 60 * 60)));
         setcookie('password', $_POST['password'], (time() - (24 * 60 * 60)));
       }
       header('location: index.php');
@@ -57,9 +57,11 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
   <h3> <span>Technos</span> Systems</h3>
   <div class="body">
     <p>Sign in to start your session</p>
-    <form class="row g-3" novalidate method="post" action="">
+    <form class="row g-3" novalidate method="post" action="" autocomplete="new-password">
       <div class="input-group has-validation">
-        <input type="text" placeholder="Email" name="email" class="form-control" id="email" autocomplete="new-password"
+        <input type="text" placeholder="Email" name="email" class="form-control" id="email" 
+          value="<?= isset($_COOKIE['email']) ? $_COOKIE['email'] : '' ?>"
+          autocomplete="new-password"
           aria-describedby="inputGroupPrepend" required>
         <span class="input-group-text" id="inputGroupPrepend"><i class="fa fa-envelope" aria-hidden="true"></i>
         </span>
@@ -68,7 +70,9 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         </div>
       </div>
       <div class="input-group has-validation">
-        <input type="password" placeholder="Password" name="password" class="form-control" id="password" autocomplete="new-password"
+        <input type="password" placeholder="Password" name="password" class="form-control" id="password" 
+        value="<?= isset($_COOKIE['password']) ? $_COOKIE['password'] : '' ?>"  
+        autocomplete="new-password"
           aria-describedby="inputGroupPrepend" required>
         <span class="input-group-text" id="inputGroupPrepend"><i class="fa fa-lock" aria-hidden="true"></i>
         </span>
@@ -78,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
       </div>
       <div class="remember">
         <div>
-          <input class="form-check-input-no" type="checkbox" name="rememberMe" value="" id="rememberCheck">
+          <input class="form-check-input-no" type="checkbox" name="rememberMe" value="" id="rememberCheck" <?= (isset($_COOKIE['email']) && isset($_COOKIE['password'])) ? "checked" : '' ?>>
           <label class="form-check-label" for="rememberCheck">
             Remember Me
           </label>
