@@ -1,30 +1,41 @@
 <?php
 require 'config.php';
-if (!empty($_SESSION["id"])) {
-  header("Location: index.php");
-}
-if (isset($_POST["submit"])) {
+require_once("auth.php");
+
+if ($_SERVER['REQUEST_METHOD'] == "POST") {
   $email = $_POST["email"];
-  $password = $_POST["password"];
-  $result = mysqli_query($conn, "SELECT * FROM user WHERE email = '$email'");
-  $row = mysqli_fetch_assoc($result);
-  if (mysqli_num_rows($result) > 0) {
-    if ($password == $row['password']) {
-      $_SESSION["login"] = true;
-      $_SESSION["id"] = $row["id"];
-      header("Location: index.php");
-      echo $_SESSION;
+  // Check user if Exist
+  $sql = "SELECT * FROM `user` where `email` = ?";
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("s", $email);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if ($result->num_rows > 0) {
+    // If user data exist
+    $details = $result->fetch_assoc();
+    // verify given password
+    $password_verify = password_verify($_POST['password'], $details['password']);
+    if ($password_verify) {
+      $_SESSION['id'] = $details['id'];
+      // Save user details on session
+      // foreach ($details as $k => $v) {
+      //   $_SESSION[$k] = $v;
+      // }
+      header('location: index.php');
     } else {
-      echo
-        "<script> alert('Email or password is incorrect'); </script>";
+      // If Password does not match
+      $err = "Invalid email and or password";
     }
   } else {
-    echo
-      "<script> alert('Email or password is incorrect'); </script>";
-
+    // If User details does not exist
+    $err = "Invalid email and or password";
   }
+
 }
+
 ?>
+
+
 
 <?php include("components/top.php") ?>
 
@@ -33,7 +44,7 @@ if (isset($_POST["submit"])) {
   <h3> <span>Technos</span> Systems</h3>
   <div class="body">
     <p>Sign in to start your session</p>
-    <form class="row g-3 needs-validation" novalidate method="post" action="">
+    <form class="row g-3" novalidate method="post" action="">
       <div class="input-group has-validation">
         <input type="text" placeholder="Email" name="email" class="form-control" id="email"
           aria-describedby="inputGroupPrepend" required>
@@ -44,7 +55,7 @@ if (isset($_POST["submit"])) {
         </div>
       </div>
       <div class="input-group has-validation">
-        <input type="text" placeholder="Password" name="password" class="form-control" id="password"
+        <input type="password" placeholder="Password" name="password" class="form-control" id="password"
           aria-describedby="inputGroupPrepend" required>
         <span class="input-group-text" id="inputGroupPrepend"><i class="fa fa-lock" aria-hidden="true"></i>
         </span>
@@ -64,6 +75,11 @@ if (isset($_POST["submit"])) {
       <a href="register.php">
         <p>Register a new membership</p>
       </a>
+      <?php if (isset($err) && !empty($err)): ?>
+      <div class="alert alert-danger">
+        <?= $err ?>
+      </div>
+      <?php endif; ?>
     </form>
   </div>
 </div>

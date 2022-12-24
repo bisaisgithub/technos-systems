@@ -1,12 +1,9 @@
 <?php
 require 'config.php';
-if (!empty($_SESSION["id"])) {
-  $id = $_SESSION["id"];
-  $result = mysqli_query($conn, "SELECT * FROM user WHERE id = $id");
-  $row = mysqli_fetch_assoc($result);
-} else {
-  header("Location: login.php");
-}
+require_once("auth.php");
+$id = $_SESSION["id"];
+$result = mysqli_query($conn, "SELECT * FROM user WHERE id = $id");
+$row = mysqli_fetch_assoc($result);
 ?>
 
 <?php include("components/top.php") ?>

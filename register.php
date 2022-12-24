@@ -1,26 +1,34 @@
 <?php
 require 'config.php';
-if (!empty($_SESSION["id"])) {
-  header("Location: index.php");
-}
-if (isset($_POST["submit"])) {
-  $full_name = $_POST["full_name"];
+require_once("auth.php");
+
+if ($_SERVER['REQUEST_METHOD'] == "POST") {
+  $full_name = $_POST['full_name'];
   $email = $_POST["email"];
-  $password = $_POST["password"];
   $confirmpassword = $_POST["confirmpassword"];
-  $duplicate = mysqli_query($conn, "SELECT * FROM user WHERE email = '$email' ");
-  if (mysqli_num_rows($duplicate) > 0) {
-    echo
-      "<script> alert('Username or Email Has Already Taken'); </script>";
+  $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+  // Check username duplication
+
+  if ($password == $confirmpassword) {
+    $err = "Username is already taken!";
   } else {
-    if ($password == $confirmpassword) {
-      $query = "INSERT INTO user VALUES('','$full_name','$email','$password')";
-      mysqli_query($conn, $query);
-      echo
-        "<script> alert('Registration Successful'); </script>";
+    $check = $conn->query("SELECT id FROM `user` where `email` = '{$email}'")->num_rows;
+    if ($check > 0) {
+      $err = "Username is already taken!";
     } else {
-      echo
-        "<script> alert('Password Does Not Match'); </script>";
+      $sql = "INSERT INTO `user` (`full_name`, `email`, `password`) VALUES (?, ?, ?)";
+      $stmt = $conn->prepare($sql);
+      $stmt->bind_param("sss", $full_name, $email, $password);
+      $stmt->execute();
+      if ($stmt->affected_rows > 0) {
+        $success = "Account has been created succesfully. <a href='login.php'>Login Now!</a>";
+        $_SESSION['success_msg'] = $success;
+        header('location: register.php');
+        unset($_POST);
+        exit;
+      } else {
+        $err = "Creating your account has been failed for some reason!";
+      }
     }
   }
 }
@@ -85,6 +93,18 @@ if (isset($_POST["submit"])) {
       <a href="login.php">
         <p class="p">I already have a membership</p>
       </a>
+      <?php if (isset($_SESSION['success_msg']) && !empty($_SESSION['success_msg'])): ?>
+      <div class="alert alert-success">
+        <?= $_SESSION['success_msg'] ?>
+      </div>
+      <?php unset($_SESSION['success_msg']); ?>
+      <?php else: ?>
+      <?php endif; ?>
+      <?php if (isset($err) && !empty($err)): ?>
+      <div class="alert alert-danger">
+        <?= $err ?>
+      </div>
+      <?php endif; ?>
     </form>
   </div>
 </div>
