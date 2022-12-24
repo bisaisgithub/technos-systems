@@ -61,21 +61,25 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         </div>
       </div>
       <div class="input-group has-validation">
-        <input type="text" placeholder="Password" name="password" class="form-control" id="password"
+        <input type="password" placeholder="Password" name="password" class="form-control" id="password"
+          pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*_=+-]).{8,24}$"
           aria-describedby="inputGroupPrepend" required>
         <span class="input-group-text" id="inputGroupPrepend"><i class="fa fa-lock" aria-hidden="true"></i>
         </span>
         <div class="invalid-feedback">
-          Please enter password
+          <!-- Please enter password -->
+          Password is atleast 8 characters with one lowercase, uppercase, number and symbol.
         </div>
       </div>
       <div class="input-group has-validation">
-        <input type="text" placeholder="Retype password" name="confirmpassword" class="form-control"
+        <input type="password" placeholder="Retype password" name="confirmpassword" class="form-control"
+          pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*_=+-]).{8,24}$"
           id="confirmpassword" aria-describedby="inputGroupPrepend" required>
         <span class="input-group-text" id="inputGroupPrepend"><i class="fa fa-lock" aria-hidden="true"></i>
         </span>
         <div class="invalid-feedback">
-          Please Retype your password.
+          <!-- Please Retype your password. -->
+          Password is atleast 8 characters with one lowercase, uppercase, number and symbol.
         </div>
       </div>
       <div class="remember">
